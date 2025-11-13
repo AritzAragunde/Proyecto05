@@ -1,4 +1,5 @@
 
+
 public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
     int respuesta = 0;
@@ -36,7 +37,6 @@ public static void main(String[] args) {
 
     sc.close();
 
-    }
 }
-
+}
 
