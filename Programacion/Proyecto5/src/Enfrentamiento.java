@@ -1,12 +1,26 @@
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Enfrentamiento {
+    private LocalDate fecha;
+    private LocalTime hora;
     private String id_enfrentamiento;
-    private String equipo_local;
-    private String equipo_visitante;
+    private Equipo equipo_local;
+    private Equipo equipo_visitante;
     private int goles_local;
     private int goles_visitante;
-    private List <Equipo> equipos;
+    private static List<Equipo> equipos = new ArrayList<>();
+
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
 
     public String getId_enfrentamiento() {
         return id_enfrentamiento;
@@ -16,20 +30,28 @@ public class Enfrentamiento {
         this.id_enfrentamiento = id_enfrentamiento;
     }
 
-    public String getEquipo_visitante() {
-        return equipo_visitante;
+    public LocalTime getHora() {
+        return hora;
     }
 
-    public void setEquipo_visitante(String equipo_visitante) {
-        this.equipo_visitante = equipo_visitante;
+    public void setHora(LocalTime hora) {
+        this.hora = hora;
     }
 
-    public String getEquipo_local() {
+    public Equipo getEquipo_local() {
         return equipo_local;
     }
 
-    public void setEquipo_local(String equipo_local) {
+    public void setEquipo_local(Equipo equipo_local) {
         this.equipo_local = equipo_local;
+    }
+
+    public Equipo getEquipo_visitante() {
+        return equipo_visitante;
+    }
+
+    public void setEquipo_visitante(Equipo equipo_visitante) {
+        this.equipo_visitante = equipo_visitante;
     }
 
     public int getGoles_local() {
@@ -48,32 +70,20 @@ public class Enfrentamiento {
         this.goles_visitante = goles_visitante;
     }
 
-    public List<Equipo> getEquipos() {
+    public static List<Equipo> getEquipos() {
         return equipos;
     }
 
-    public void setEquipos(List<Equipo> equipos) {
-        this.equipos = equipos;
+    public static void setEquipos(List<Equipo> equipos) {
+        Enfrentamiento.equipos = equipos;
     }
 
-    public Enfrentamiento(String id_enfrentamiento, String equipo_local, String equipo_visitante, int goles_local, int goles_visitante, List<Equipo> equipos) {
+    public Enfrentamiento(LocalDate fecha, LocalTime hora, String id_enfrentamiento, Equipo equipo_local, Equipo equipo_visitante) {
+        this.fecha = fecha;
+        this.hora = hora;
         this.id_enfrentamiento = id_enfrentamiento;
         this.equipo_local = equipo_local;
         this.equipo_visitante = equipo_visitante;
-        this.goles_local = goles_local;
-        this.goles_visitante = goles_visitante;
-        this.equipos = equipos;
-    }
-
-    @Override
-    public String toString() {
-        return "Enfrentamiento{" +
-                "id_enfrentamiento='" + id_enfrentamiento + '\'' +
-                ", equipo_local='" + equipo_local + '\'' +
-                ", equipo_visitante='" + equipo_visitante + '\'' +
-                ", goles_local=" + goles_local +
-                ", goles_visitante=" + goles_visitante +
-                ", equipos=" + equipos +
-                '}';
     }
 }
+

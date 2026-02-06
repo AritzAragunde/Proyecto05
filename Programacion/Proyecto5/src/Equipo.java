@@ -5,8 +5,13 @@ import java.util.List;
 public class Equipo {
     private String nombre;
     private LocalDate fecha_fundacion;
-    private static int jugadores;
-    private static List<Jugador> lista_jugadores = new ArrayList<>();
+    private int jugadores;
+    private List<Jugador> lista_jugadores = new ArrayList<>();
+
+    public Equipo(List<Jugador> lista_jugadores, String nombre) {
+        this.lista_jugadores = lista_jugadores;
+        this.nombre = nombre;
+    }
 
     public String getNombre() {
         return nombre;
@@ -59,7 +64,7 @@ public class Equipo {
                 '}';
     }
 
-    public static void jugadoresMaxMin() {
+    public void jugadoresMaxMin() {
         if (lista_jugadores.size() > 6){
             System.out.println("no se permite inscribir a tantos jugadores, maximo 6");
         }
@@ -68,7 +73,4 @@ public class Equipo {
         }
     }
 
-    public static void contarJugadores(){
-        jugadores++;
-    }
 }
