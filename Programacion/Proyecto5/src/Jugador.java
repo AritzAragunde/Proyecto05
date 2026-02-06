@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Jugador {
     private int id_jugador;
     private String nombre;
@@ -7,7 +10,11 @@ public class Jugador {
     private String nickname;
     private String rol;
     private static double sueldo;
+    private static List<Equipo> equipos = new ArrayList<>();
 
+    public Jugador(String nombre) {
+        this.nombre = nombre;
+    }
 
     public int getId_jugador() {
         return id_jugador;
@@ -98,7 +105,7 @@ public class Jugador {
                 '}';
     }
     public static void salarioMinimo(){
-        if(sueldo > 1221){
+        if(sueldo < 1221){
             System.out.println("El sueldo minimo de un jugador no puede ser inferior al SMI");
         }
     }
