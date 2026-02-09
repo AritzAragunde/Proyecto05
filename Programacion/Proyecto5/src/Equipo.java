@@ -51,7 +51,7 @@ public class Equipo {
         this.nombre = nombre;
         this.lista_jugadores = lista_jugadores;
         this.jugadores = jugadores;
-        this.fecha_fundacion = this.fecha_fundacion;
+        this.fecha_fundacion = fecha_fundacion;
     }
 
     @Override

@@ -12,7 +12,7 @@ public class Jugador {
     private static double sueldo;
     private static List<Equipo> equipos = new ArrayList<>();
 
-    public Jugador(String nombre) {
+    public Jugador(int contadorIdJugador, String nombre, String apellido, String nacionalidad, String fecha_nacimiento, String nickname, String rol, Double sueldo) {
         this.nombre = nombre;
     }
 
