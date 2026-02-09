@@ -3,12 +3,11 @@ import java.util.List;
 
 public class Competicion {
     private String nombre;
-    private String estado;
-    private List<Jornada> lista_jornadas;
+    private String estado = "abierto";
+    private List<Jornada> lista_jornadas = new ArrayList<>();
 
-    public Competicion(String nombre, String estado, List<Jornada> lista_jornadas) {
+    public Competicion(String nombre,List<Jornada> lista_jornadas) {
         this.nombre = nombre;
-        this.estado = estado;
         this.lista_jornadas = lista_jornadas;
     }
 
@@ -34,5 +33,14 @@ public class Competicion {
 
     public void setLista_jornadas(List<Jornada> lista_jornadas) {
         this.lista_jornadas = lista_jornadas;
+    }
+
+    @Override
+    public String toString() {
+        return "Competicion{" +
+                "nombre='" + nombre + '\'' +
+                ", estado='" + estado + '\'' +
+                ", lista_jornadas=" + lista_jornadas +
+                '}';
     }
 }

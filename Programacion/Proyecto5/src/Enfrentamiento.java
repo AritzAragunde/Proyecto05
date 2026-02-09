@@ -85,5 +85,20 @@ public class Enfrentamiento {
         this.equipo_local = equipo_local;
         this.equipo_visitante = equipo_visitante;
     }
+
+    @Override
+    public String toString() {
+        return "Enfrentamiento{" +
+                "fecha=" + fecha +
+                ", hora=" + hora +
+                ", id_enfrentamiento='" + id_enfrentamiento + '\'' +
+                ", equipo_local=" + equipo_local +
+                ", equipo_visitante=" + equipo_visitante +
+                ", goles_local=" + goles_local +
+                ", goles_visitante=" + goles_visitante +
+                '}';
+    }
+
+
 }
 

@@ -1,6 +1,5 @@
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +17,14 @@ public class Main {
     private static int equipo;
     static int contadorIdJugador = 1;
     private static Competicion c1;
+    private static List<Competicion> competiciones = new ArrayList<>();
 
-
+    // ------------------- INSCRIPCIONES -------------------
     public static void inscribirJugador() {
         if (equipos.isEmpty()) {
             System.out.println("Error: Debes crear al menos un equipo antes de inscribir jugadores.");
             return;
         }
-
-        Scanner sc = new Scanner(System.in);
 
         for (Equipo equipo : equipos) {
             System.out.println("------ INSCRIBIENDO JUGADORES PARA EL EQUIPO: " + equipo.getNombre() + " ------");
@@ -42,9 +40,7 @@ public class Main {
             while (true) {
                 System.out.println("¿Cuántos jugadores quieres inscribir en este equipo? (mínimo 2, máximo " + jugadoresFaltantes + ")");
                 try {
-                    numJugadores = sc.nextInt();
-                    sc.nextLine();
-
+                    numJugadores = Integer.parseInt(sc.nextLine());
                     if (numJugadores < 2 || numJugadores > jugadoresFaltantes) {
                         System.out.println("Error: Debes ingresar un número entre 2 y " + jugadoresFaltantes + ".");
                     } else {
@@ -52,7 +48,6 @@ public class Main {
                     }
                 } catch (Exception e) {
                     System.out.println("Error: Debes ingresar un número válido.");
-                    sc.nextLine();
                 }
             }
 
@@ -68,8 +63,18 @@ public class Main {
                     System.out.print("Nacionalidad: ");
                     String nacionalidad = sc.nextLine();
 
-                    System.out.print("Fecha de nacimiento (dd/MM/yyyy): ");
-                    String fecha_nacimiento = sc.nextLine();
+                    // Validación de fecha de nacimiento
+                    LocalDate fecha_nacimiento;
+                    while (true) {
+                        System.out.print("Fecha de nacimiento (dd/MM/yyyy): ");
+                        try {
+                            fecha_nacimiento = LocalDate.parse(sc.nextLine(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                            break;
+                        } catch (Exception e) {
+                            System.out.println("Error: Formato de fecha incorrecto.");
+                        }
+                    }
+                    String fechaNacimientoStr = fecha_nacimiento.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
                     System.out.print("Nickname: ");
                     String nickname = sc.nextLine();
@@ -77,13 +82,24 @@ public class Main {
                     System.out.print("Rol del jugador: ");
                     String rol = sc.nextLine();
 
-                    System.out.print("Sueldo: ");
-                    double sueldo = sc.nextDouble();
-                    sc.nextLine();
+                    // Validación del sueldo
+                    double sueldo;
+                    while (true) {
+                        System.out.print("Sueldo: ");
+                        try {
+                            sueldo = Double.parseDouble(sc.nextLine());
+                            break;
+                        } catch (Exception e) {
+                            System.out.println("Error: Debes ingresar un número válido.");
+                        }
+                    }
 
+                    // Se asume que esta función comprueba el salario mínimo
                     Jugador.salarioMinimo();
 
-                    Jugador j1 = new Jugador(contadorIdJugador, nombre, apellido, nacionalidad, fecha_nacimiento, nickname, rol, sueldo);
+                    // Crear jugador usando String para la fecha
+                    Jugador j1 = new Jugador(contadorIdJugador, nombre, apellido, nacionalidad, fechaNacimientoStr, nickname, rol, sueldo);
+
                     jugadores.add(j1);
                     equipo.getLista_jugadores().add(j1);
 
@@ -92,7 +108,6 @@ public class Main {
 
                 } catch (Exception e) {
                     System.out.println("Error al ingresar el jugador: " + e.getMessage());
-                    sc.nextLine();
                     i--;
                 }
             }
@@ -103,15 +118,13 @@ public class Main {
         System.out.println("Todos los equipos tienen sus jugadores inscritos.");
     }
 
-
-
-
     public static void inscribirEquipo() {
         int numEquipos = 0;
+
         while (true) {
             System.out.println("¿Cuántos equipos quieres inscribir? (debe ser un número par)");
             try {
-                numEquipos = sc.nextInt();
+                numEquipos = Integer.parseInt(sc.nextLine());
 
                 if (numEquipos <= 0) {
                     System.out.println("Error: Debe ser un número mayor que cero.");
@@ -122,26 +135,31 @@ public class Main {
                 }
             } catch (Exception e) {
                 System.out.println("Error: Debes ingresar un número entero.");
-                sc.next();
             }
         }
 
-        sc.nextLine();
         for (int i = 0; i < numEquipos; i++) {
             try {
-                System.out.println("Indique el nombre del equipo que quiere ingresar:");
+                System.out.println("Indique el nombre del equipo:");
                 String nombre = sc.nextLine();
 
-                System.out.println("Ingrese la fecha de fundación del equipo (dd/MM/yyyy):");
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                LocalDate fecha_fundacion = LocalDate.parse(sc.nextLine(), formatter);
+                LocalDate fecha_fundacion;
+                while (true) {
+                    System.out.println("Ingrese la fecha de fundación (dd/MM/yyyy):");
+                    try {
+                        fecha_fundacion = LocalDate.parse(sc.nextLine(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                        break;
+                    } catch (Exception e) {
+                        System.out.println("Error: Formato de fecha incorrecto.");
+                    }
+                }
 
                 Equipo e1 = new Equipo(nombre, fecha_fundacion);
                 equipos.add(e1);
 
-                System.out.println("Equipo " + nombre + " inscrito!");
+                System.out.println("Equipo " + nombre + " inscrito correctamente!");
             } catch (Exception e) {
-                System.out.println("Error al registrar el equipo: " + e.getMessage());
+                System.out.println("Error al registrar el equipo. Formato de fecha incorrecto.");
                 i--;
             }
         }
@@ -149,229 +167,160 @@ public class Main {
         System.out.println("Todos los equipos inscritos correctamente!");
     }
 
-
+    // ------------------- VER EQUIPOS/JUGADORES -------------------
     public static void verEquipos() {
         System.out.println(equipos);
-        System.out.println("QUIERES VOlVER AL MENU? s/n");
+        System.out.println("QUIERES VOLVER AL MENU? s/n");
         String respuesta = sc.next();
         sc.nextLine();
-        if (respuesta.equalsIgnoreCase("s")) {
-            System.out.println("Volviendo al menu ......");
-            sc.nextLine();
-            main(null);
-        } else if (respuesta.equalsIgnoreCase("n")) {
-            inscribirEquipo();
-        }
+        System.out.println("Volviendo al menu ......");
+        menuAdmin();
     }
 
     public static void verJugadores() {
         System.out.println(jugadores);
-        System.out.println("QUIERES VOlVER AL MENU? s/n");
+        System.out.println("QUIERES VOLVER AL MENU? s/n");
         String respuesta = sc.next();
         sc.nextLine();
-        if (respuesta.equalsIgnoreCase("s")) {
-            System.out.println("Volviendo al menu ......");
-            sc.nextLine();
-            main(null);
-        } else if (respuesta.equalsIgnoreCase("n")) {
-            inscribirEquipo();
+        System.out.println("Volviendo al menu ......");
+        menuAdmin();
+    }
+
+    // ------------------- MAIN -------------------
+    public static void main(String[] args) {
+        inscribirEquipo();
+        inscribirJugador();
+        menuAdmin();
+    }
+
+    // ------------------- MENU ADMIN -------------------
+    public static void menuAdmin() {
+        System.out.println("1.-Generar calendario\n" +
+                "2.-Cerrar estado de la competicion\n" +
+                "3.- Introducir resultado\n" +
+                "4.-Ver informes\n" +
+                "5.-CRUD\n" +
+                "6.-Salir");
+        int opcion = Integer.parseInt(sc.nextLine());
+        switch (opcion) {
+            case 1:
+                crearEnfrentamientos();
+                crearJornadas();
+                crearCompeticion();
+                System.out.println("Calendario creado");
+                menuAdmin();
+                break;
+            case 2:
+                if (c1 != null) c1.setEstado("cerrado");
+                menuAdmin();
+                break;
+            case 3:
+                introducirResultados();
+                menuAdmin();
+                break;
+            case 4:
+                if (equipos.isEmpty()) {
+                    System.out.println("No existen equipos");
+                } else {
+                    System.out.println("Que quieres ver?(equipos/jugadores/competicion/enfrentamientos/resultados)");
+                    String respuesta = sc.nextLine().toLowerCase();
+                    switch (respuesta) {
+                        case "equipos": verEquipos(); break;
+                        case "jugadores": verJugadores(); break;
+                        case "competicion": verCompeticion(); break;
+                        case "enfrentamientos": verEnfrentamientos(); break;
+                        case "resultados": verJornada(); break;
+                        default: System.out.println("Opción no válida");
+                    }
+                }
+                menuAdmin();
+                break;
+            case 5:
+                crud();
+                menuAdmin();
+                break;
+            case 6:
+                System.out.println("Saliendo...");
+                break;
         }
     }
 
-    public static void main(String[] args) {
-       inscribirEquipo();
-       inscribirJugador();
-        menu();
+    // ------------------- FUNCIONES AUXILIARES -------------------
+    public static void crearCompeticion() {
+        System.out.print("Que nombre tiene la competicion:");
+        String nombre = sc.nextLine();
+        c1 = new Competicion(nombre, jornadas);
     }
-
-    public static void menu() {
-       if (usuarios.isEmpty()) {
-           System.out.print("No hay usuarios");
-           crearUsuarios();
-       }
-       else {
-           System.out.print("Que tipo de usuario eres?(usuario/admin)");
-           String respuesta = sc.next().toLowerCase();
-           switch (respuesta) {
-               case "usuario":{
-                   if (users.isEmpty()) {
-                       System.out.print("No hay users creados");
-                       crearUsuarios();
-                   }
-                   else {
-                       System.out.print("Que hacemos?");
-                       menuUser();
-                   }
-               }
-               case "admin":{
-                   if (admins.isEmpty()) {
-                       System.out.print("No hay admins creados");
-                       crearUsuarios();
-                   }
-                   else {
-                       System.out.print("Que hacemos?");
-                       menuAdmin();
-                   }
-               }
-               }
-           }
-       }
-
-    public static void  menuUser() {
-       System.out.println("1.-Ver informe\n" +
-               "2.-Ver resultados");
-       int opcion = sc.nextInt();
-       switch (opcion) {
-           case 1: {
-               for (int i = 0; i<equipos.size(); i++) {
-                   Equipo e = equipos.get(i);
-                   System.out.println("Equipo" + (i+1) + e.getNombre() + "fundado en" + e.getFecha_fundacion() + "con jugadores" + e.getJugadores());
-               }
-           }
-           case 2:{
-               mostrarResultados();
-           }
-       }
-    }
-
-    public static void menuAdmin() {
-       System.out.println("1.-Generar calnderio\n" +
-               "2.-Cerrar estado de la competicion\n" +
-               "3.- Introducir resultado\n" +
-               "4.-Ver informes\n" +
-               "5.-CRUD\n" +
-               "6.-Salir");
-       int opcion = sc.nextInt();
-       switch (opcion) {
-           case 1:
-               crearEnfrentamientos();
-               crearJornadas();
-               crearCompeticion();
-               System.out.println("Calendario creado");
-               menuAdmin();
-           break;
-           case 2:
-               Competicion c = c1;
-               c.setEstado("cerrado");
-               menuAdmin();
-           break;
-           case 3:
-               introducirResultados();
-               menuAdmin();
-               break;
-           case 4:
-               if (equipos.isEmpty()) {
-                   throw new RuntimeException("No existen equipos");
-               }
-               else {
-               verEquipos();
-               verJugadores();}
-                 break;
-
-           case 5:
-               System.out.println("que quieres crear?(jugador/equipo)");
-               String respuesta = sc.next().toLowerCase();
-               if (respuesta.equalsIgnoreCase("jugador")) {
-                   if (equipos.isEmpty()) {
-                       System.out.println("primero se deben de crear los equipos");
-                       inscribirEquipo();
-                   }
-                   else {
-                       inscribirJugador();
-                   }
-               }
-               if (respuesta.equalsIgnoreCase("equipo")) {
-                   inscribirJugador();
-               }
-               break;
-               case 6:
-                   menu();
-                   break;
-       }
-    }
-
 
     public static void crearEnfrentamientos() {
-        LocalDate fecha = LocalDate.now();
-        LocalDate fechaSemana = fecha.plusWeeks(1);
-        LocalTime hora = LocalTime.of(21,00);
-        for (int i = 0; i < equipos.size()/2; i++) {
-            System.out.print("cual es el id del enfrentamiento");
-            String id_enfrentamiento = sc.next();
-            Equipo equipo1 = equipos.get(i * 2);
-            Equipo equipo2 = equipos.get(i * 2 + 1);
+        LocalDate fecha = LocalDate.now().plusWeeks(1);
+        LocalTime hora = LocalTime.of(21, 0);
 
-            Enfrentamiento e1 = new Enfrentamiento(fechaSemana, hora, id_enfrentamiento, equipo1, equipo2);
-            enfrentamientos.add(e1);
+        enfrentamientos.clear();
+
+        for (int i = 0; i < equipos.size(); i++) {
+            for (int j = i + 1; j < equipos.size(); j++) {
+
+                System.out.print("ID enfrentamiento (IDA) " + equipos.get(i).getNombre() + " vs " + equipos.get(j).getNombre() + ": ");
+                String idIda = sc.nextLine();
+
+                enfrentamientos.add(new Enfrentamiento(fecha, hora, idIda, equipos.get(i), equipos.get(j)));
+
+                System.out.print("ID enfrentamiento (VUELTA) " + equipos.get(j).getNombre() + " vs " + equipos.get(i).getNombre() + ": ");
+                String idVuelta = sc.nextLine();
+
+                enfrentamientos.add(new Enfrentamiento(fecha.plusWeeks(1), hora, idVuelta, equipos.get(j), equipos.get(i)));
             }
         }
 
-        public static void crearJornadas(){
-        for (int i = 0; i < (equipos.size() -1 ) * 2; i++) {
-            System.out.print("cual es el id de la jornada");
-            String id_jornada = sc.next();
-            Enfrentamiento e1 = enfrentamientos.get(i% enfrentamientos.size());
-            Jornada j = new Jornada(id_jornada,(i+1),e1.getFecha(),e1);
+        System.out.println("Se han creado " + enfrentamientos.size() + " enfrentamientos.");
+    }
+
+    public static void crearJornadas() {
+        jornadas.clear();
+
+        int indice = 0;
+        int jornadaNum = 1;
+
+        while (indice < enfrentamientos.size()) {
+            String id_jornada = "J" + jornadaNum;
+            LocalDate fechaJornada = enfrentamientos.get(indice).getFecha();
+            Jornada j = new Jornada(id_jornada, jornadaNum, fechaJornada);
+
+            j.getEnfrentamientos().add(enfrentamientos.get(indice));
+            indice++;
+
             jornadas.add(j);
+            jornadaNum++;
         }
-        }
+    }
 
-        public static void crearUsuarios(){
-        System.out.print("que quieres crear Admin/user");
-        String opcion = sc.nextLine().toLowerCase();
-        switch(opcion){
-            case "admin": {
-                System.out.print("cuantos quieres crear?");
-                int opcion2 = sc.nextInt();
-                for (int i = 0; i<opcion2; i++) {
-                    System.out.print("que nombre?");
-                    String nombre = sc.next();
-                    System.out.print("contraseña:");
-                    String password = sc.next();
-                    Admin admin = new Admin(nombre,password);
-                    admins.add(admin);
-                    usuarios.add(admin);
-                }
-                menu();
-            }
-            case "user": {
-                System.out.print("cuantos quieres crear?");
-                int opcion2 = sc.nextInt();
-                for (int i = 0; i<opcion2; i++) {
-                    System.out.print("que nombre?");
-                    String nombre = sc.next();
-                    System.out.print("contraseña:");
-                    String password = sc.next();
-                    User user = new User(nombre,password);
-                    users.add(user);
-                    usuarios.add(user);
-                }
-                menu();
-            }
-
-        }
-        }
-
-        public static void crearCompeticion(){
-        System.out.print("que nombre tiene la competicion:");
-        String nombre = sc.nextLine();
-        System.out.println("cual es el estado de la competicion");
-        String competiocion = sc.nextLine();
-        c1 = new Competicion(nombre,competiocion,jornadas);
-        }
     public static void introducirResultados() {
+        if (enfrentamientos.isEmpty()) {
+            System.out.println("No hay enfrentamientos creados.");
+            return;
+        }
+
         for (int i = 0; i < enfrentamientos.size(); i++) {
             Enfrentamiento e = enfrentamientos.get(i);
-
-            System.out.println("Enfrentamiento " + (i + 1) +
-                    " - Equipo Local: " + e.getEquipo_local().getNombre() +
+            System.out.println("Enfrentamiento " + (i + 1) + " - Equipo Local: " + e.getEquipo_local().getNombre() +
                     " vs Equipo Visitante: " + e.getEquipo_visitante().getNombre());
-
-            System.out.print("Cuantos goles ha marcado el local: ");
-            int golesLocal = sc.nextInt();
-
-            System.out.print("Cuantos goles ha marcado el visitante: ");
-            int golesVisitante = sc.nextInt();
+            int golesLocal;
+            while (true) {
+                try {
+                    System.out.print("Cuantos goles ha marcado el local: ");
+                    golesLocal = Integer.parseInt(sc.nextLine());
+                    break;
+                } catch (Exception ex) { System.out.println("Número inválido"); }
+            }
+            int golesVisitante;
+            while (true) {
+                try {
+                    System.out.print("Cuantos goles ha marcado el visitante: ");
+                    golesVisitante = Integer.parseInt(sc.nextLine());
+                    break;
+                } catch (Exception ex) { System.out.println("Número inválido"); }
+            }
 
             e.setGoles_local(golesLocal);
             e.setGoles_visitante(golesVisitante);
@@ -380,36 +329,320 @@ public class Main {
         System.out.println("Resultados introducidos correctamente");
     }
 
-    public static void mostrarResultados() {
-        if (enfrentamientos.isEmpty()) {
-            System.out.println("Error: No hay enfrentamientos creados.");
+    // ------------------- FUNCIONES VER -------------------
+    public static void verCompeticion() { if (c1 != null) { System.out.println(c1.getNombre() + " - " + c1.getEstado()); } else { System.out.println("No hay competicion"); } }
+    public static void verJornada() { System.out.println(jornadas); }
+    public static void verEnfrentamientos() { System.out.println(enfrentamientos); }
+
+    // ------------------- CRUD -------------------
+    public static void crud() {
+        System.out.println("¿Qué quieres hacer? (ver / crear / modificar / borrar)");
+        String respuesta = sc.nextLine().toLowerCase();
+
+        switch (respuesta) {
+
+            case "ver":
+                System.out.println("¿Qué quieres ver? (equipos / jugadores / competicion / enfrentamientos / resultados)");
+                String respuestaVer = sc.nextLine().toLowerCase();
+
+                switch (respuestaVer) {
+                    case "equipos":
+                        verEquipos();
+                        break;
+                    case "jugadores":
+                        verJugadores();
+                        break;
+                    case "competicion":
+                        verCompeticion();
+                        break;
+                    case "enfrentamientos":
+                        verEnfrentamientos();
+                        break;
+                    case "resultados":
+                        verJornada();
+                        break;
+                    default:
+                        System.out.println("Opción no válida");
+                }
+                break;
+
+            case "crear":
+                System.out.println("¿Qué quieres crear? (equipo / jugador / competicion / enfrentamientos / jornadas)");
+                String respuestaCrear = sc.nextLine().toLowerCase();
+
+                switch (respuestaCrear) {
+                    case "equipo":
+                        inscribirEquipo();
+                        break;
+                    case "jugador":
+                        inscribirJugador();
+                        break;
+                    case "competicion":
+                        crearCompeticion();
+                        break;
+                    case "enfrentamientos":
+                        crearEnfrentamientos();
+                        break;
+                    case "jornadas":
+                        crearJornadas();
+                        break;
+                    default:
+                        System.out.println("Opción no válida");
+                }
+                break;
+
+            case "modificar":
+                System.out.println("¿Qué quieres modificar? (equipos / jugadores / resultados)");
+                String respuestaModificar = sc.nextLine().toLowerCase();
+
+                switch (respuestaModificar) {
+                    case "equipos":
+                        modificarEquipos();
+                        break;
+                    case "jugadores":
+                        modificarJugadores();
+                        break;
+                    case "resultados":
+                        modificarResultados();
+                        break;
+                    default:
+                        System.out.println("Opción no válida");
+                }
+                break;
+
+            case "borrar":
+                System.out.println("¿Qué quieres borrar? (equipos / jugadores / competicion / enfrentamientos)");
+                String respuestaBorrar = sc.nextLine().toLowerCase();
+
+                switch (respuestaBorrar) {
+                    case "equipos":
+                        borrarEquipos();
+                        break;
+                    case "jugadores":
+                        borrarJugadores();
+                        break;
+                    case "competicion":
+                        borrarCompeticion();
+                        break;
+                    case "enfrentamientos":
+                        borrarEnfrentamientos();
+                        break;
+                    default:
+                        System.out.println("Opción no válida");
+                }
+                break;
+
+            default:
+                System.out.println("Acción no válida");
+        }
+    }
+    public static void modificarEquipos() {
+        if (equipos.isEmpty()) {
+            System.out.println("No hay equipos para modificar.");
             return;
         }
-
-        boolean hayResultados = false;
-
-        System.out.println("----- RESULTADOS -----");
-        for (int i = 0; i < enfrentamientos.size(); i++) {
-            Enfrentamiento e = enfrentamientos.get(i);
-
-            String local = e.getEquipo_local().getNombre();
-            String visitante = e.getEquipo_visitante().getNombre();
-            int golesLocal = e.getGoles_local();
-            int golesVisitante = e.getGoles_visitante();
-
-            if (golesLocal == -1 || golesVisitante == -1) {
-                System.out.println((i + 1) + ". " + local + " vs " + visitante + " (Aún no jugado)");
-            } else {
-                System.out.println((i + 1) + ". " + local + " " + golesLocal + " - " + golesVisitante + " " + visitante);
-                hayResultados = true;
+        System.out.println("=== MODIFICAR EQUIPO ===");
+        for (int i = 0; i < equipos.size(); i++) {
+            System.out.println((i + 1) + ". " + equipos.get(i).getNombre());
+        }
+        System.out.print("Selecciona el número del equipo que quieres modificar: ");
+        int opcion = Integer.parseInt(sc.nextLine());
+        if (opcion < 1 || opcion > equipos.size()) {
+            System.out.println("Opción inválida.");
+            return;
+        }
+        Equipo equipo = equipos.get(opcion - 1);
+        System.out.println("Has seleccionado: " + equipo.getNombre());
+        System.out.print("Nuevo nombre (enter para mantener '" + equipo.getNombre() + "'): ");
+        String nuevoNombre = sc.nextLine();
+        if (!nuevoNombre.isEmpty()) {
+            equipo.setNombre(nuevoNombre);
+        }
+        System.out.print("Nueva fecha de fundación (dd/MM/yyyy) (enter para mantener '" + equipo.getFecha_fundacion() + "'): ");
+        String fechaStr = sc.nextLine();
+        if (!fechaStr.isEmpty()) {
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                LocalDate nuevaFecha = LocalDate.parse(fechaStr, formatter);
+                equipo.setFecha_fundacion(nuevaFecha);
+            } catch (Exception e) {
+                System.out.println("Formato de fecha incorrecto, se mantiene la original.");
             }
         }
-        if (!hayResultados) {
-            System.out.println("Error: No hay resultados registrados aún.");
+        System.out.print("Nuevo número de jugadores (enter para mantener '" + equipo.getJugadores() + "'): ");
+        String numJugadoresStr = sc.nextLine();
+        if (!numJugadoresStr.isEmpty()) {
+            try {
+                int nuevosJugadores = Integer.parseInt(numJugadoresStr);
+                equipo.setJugadores(nuevosJugadores);
+            } catch (NumberFormatException e) {
+                System.out.println("Número inválido, se mantiene el original.");
+            }
         }
-
-        System.out.println("----------------------");
+        System.out.println("Equipo modificado correctamente:");
+        System.out.println(equipo);
     }
 
+    public static void modificarJugadores() {
+        if (jugadores.isEmpty()) {
+            System.out.println("No hay jugadores para modificar.");
+            return;
+        }
+        System.out.println("=== MODIFICAR JUGADOR ===");
+        for (int i = 0; i < jugadores.size(); i++) {
+            Jugador j = jugadores.get(i);
+            System.out.println((i + 1) + ". " + j.getNombre() + " " + j.getApellido() + " (" + j.getNickname() + ")");
+        }
+        System.out.print("Selecciona el número del jugador que quieres modificar: ");
+        int opcion = Integer.parseInt(sc.nextLine());
+        if (opcion < 1 || opcion > jugadores.size()) {
+            System.out.println("Opción inválida.");
+            return;
+        }
+        Jugador jugador = jugadores.get(opcion - 1);
+        System.out.println("Has seleccionado: " + jugador.getNombre() + " " + jugador.getApellido());
+        System.out.print("Nuevo nombre (enter para mantener '" + jugador.getNombre() + "'): ");
+        String nuevoNombre = sc.nextLine();
+        if (!nuevoNombre.isEmpty()) jugador.setNombre(nuevoNombre);
+        System.out.print("Nuevo apellido (enter para mantener '" + jugador.getApellido() + "'): ");
+        String nuevoApellido = sc.nextLine();
+        if (!nuevoApellido.isEmpty()) jugador.setApellido(nuevoApellido);
+        System.out.print("Nueva nacionalidad (enter para mantener '" + jugador.getNacionalidad() + "'): ");
+        String nuevaNacionalidad = sc.nextLine();
+        if (!nuevaNacionalidad.isEmpty()) jugador.setNacionalidad(nuevaNacionalidad);
+        System.out.print("Nueva fecha de nacimiento (dd/MM/yyyy) (enter para mantener '" + jugador.getFecha_nacimiento() + "'): ");
+        String nuevaFecha = sc.nextLine();
+        if (!nuevaFecha.isEmpty()) jugador.setFecha_nacimiento(nuevaFecha);
+        System.out.print("Nuevo nickname (enter para mantener '" + jugador.getNickname() + "'): ");
+        String nuevoNickname = sc.nextLine();
+        if (!nuevoNickname.isEmpty()) jugador.setNickname(nuevoNickname);
+        System.out.print("Nuevo rol (enter para mantener '" + jugador.getRol() + "'): ");
+        String nuevoRol = sc.nextLine();
+        if (!nuevoRol.isEmpty()) jugador.setRol(nuevoRol);
+        System.out.println("Jugador modificado correctamente:");
+        System.out.println(jugador);
+    }
+
+    public static void modificarResultados() {
+        if (enfrentamientos.isEmpty()) {
+            System.out.println("No hay enfrentamientos para modificar.");
+            return;
+        }
+        System.out.println("=== MODIFICAR RESULTADOS DE ENFRENTAMIENTOS ===");
+        for (int i = 0; i < enfrentamientos.size(); i++) {
+            Enfrentamiento e = enfrentamientos.get(i);
+            System.out.println((i + 1) + ". " + e.getEquipo_local().getNombre() + " vs " + e.getEquipo_visitante().getNombre() +
+                    " | Resultado: " + e.getGoles_local() + " - " + e.getGoles_visitante() +
+                    " | Fecha: " + e.getFecha() + " Hora: " + e.getHora());
+        }
+        System.out.print("Selecciona el número del enfrentamiento que quieres modificar: ");
+        int opcion = Integer.parseInt(sc.nextLine());
+        if (opcion < 1 || opcion > enfrentamientos.size()) {
+            System.out.println("Opción inválida.");
+            return;
+        }
+        Enfrentamiento partido = enfrentamientos.get(opcion - 1);
+
+        System.out.print("Goles de " + partido.getEquipo_local().getNombre() + " (enter para mantener " + partido.getGoles_local() + "): ");
+        String golesLocalStr = sc.nextLine();
+        if (!golesLocalStr.isEmpty()) partido.setGoles_local(Integer.parseInt(golesLocalStr));
+
+        System.out.print("Goles de " + partido.getEquipo_visitante().getNombre() + " (enter para mantener " + partido.getGoles_visitante() + "): ");
+        String golesVisitanteStr = sc.nextLine();
+        if (!golesVisitanteStr.isEmpty()) partido.setGoles_visitante(Integer.parseInt(golesVisitanteStr));
+
+        System.out.println("Resultado modificado correctamente:");
+        System.out.println(partido.getEquipo_local().getNombre() + " " + partido.getGoles_local() +
+                " - " + partido.getGoles_visitante() + " " + partido.getEquipo_visitante().getNombre());
+    }
+
+    public static void borrarEquipos() {
+        if (equipos.isEmpty()) {
+            System.out.println("No hay equipos para borrar.");
+            return;
+        }
+        System.out.println("=== BORRAR EQUIPO ===");
+        for (int i = 0; i < equipos.size(); i++) System.out.println((i + 1) + ". " + equipos.get(i).getNombre());
+        System.out.print("Selecciona el número del equipo que quieres borrar: ");
+        int opcion = Integer.parseInt(sc.nextLine());
+        if (opcion < 1 || opcion > equipos.size()) return;
+        Equipo equipoBorrar = equipos.get(opcion - 1);
+        System.out.print("¿Estás seguro de que quieres borrar el equipo '" + equipoBorrar.getNombre() + "'? (si/no): ");
+        String confirmar = sc.nextLine().toLowerCase();
+        if (confirmar.equals("si") || confirmar.equals("s")) {
+            equipos.remove(equipoBorrar);
+            System.out.println("Equipo borrado correctamente.");
+        } else {
+            System.out.println("Borrado cancelado.");
+        }
+    }
+
+    public static void borrarJugadores() {
+        if (jugadores.isEmpty()) return;
+        System.out.println("=== BORRAR JUGADOR ===");
+        for (int i = 0; i < jugadores.size(); i++) {
+            Jugador j = jugadores.get(i);
+            System.out.println((i + 1) + ". " + j.getNombre() + " " + j.getApellido() + " (" + j.getNickname() + ")");
+        }
+        System.out.print("Selecciona el número del jugador que quieres borrar: ");
+        int opcion = Integer.parseInt(sc.nextLine());
+        if (opcion < 1 || opcion > jugadores.size()) return;
+        Jugador jugadorBorrar = jugadores.get(opcion - 1);
+        System.out.print("¿Estás seguro de que quieres borrar al jugador '" + jugadorBorrar.getNombre() + " " + jugadorBorrar.getApellido() + "'? (si/no): ");
+        String confirmar = sc.nextLine().toLowerCase();
+        if (confirmar.equals("si") || confirmar.equals("s")) {
+            jugadores.remove(jugadorBorrar);
+            System.out.println("Jugador borrado correctamente.");
+        } else {
+            System.out.println("Borrado cancelado.");
+        }
+    }
+
+    public static void borrarCompeticion() {
+        if (competiciones.isEmpty()) return;
+        System.out.println("=== BORRAR COMPETICIÓN ===");
+        for (int i = 0; i < competiciones.size(); i++) System.out.println((i + 1) + ". " + competiciones.get(i).getNombre());
+        System.out.print("Selecciona el número de la competición que quieres borrar: ");
+        int opcion = Integer.parseInt(sc.nextLine());
+        if (opcion < 1 || opcion > competiciones.size()) return;
+        Competicion competicionBorrar = competiciones.get(opcion - 1);
+        System.out.print("¿Estás seguro de que quieres borrar la competición '" + competicionBorrar.getNombre() + "' y todas sus jornadas y enfrentamientos? (si/no): ");
+        String confirmar = sc.nextLine().toLowerCase();
+        if (confirmar.equals("si") || confirmar.equals("s")) {
+            if (competicionBorrar.getLista_jornadas() != null) {
+                for (Jornada j : competicionBorrar.getLista_jornadas()) {
+                    if (j.getEnfrentamientos() != null) j.getEnfrentamientos().clear();
+                }
+                competicionBorrar.getLista_jornadas().clear();
+            }
+            competiciones.remove(competicionBorrar);
+            System.out.println("Competición y todos sus datos asociados borrados correctamente.");
+        } else {
+            System.out.println("Borrado cancelado.");
+        }
+    }
+
+    public static void borrarEnfrentamientos() {
+        if (enfrentamientos.isEmpty()) return;
+        System.out.println("=== BORRAR ENFRENTAMIENTO ===");
+        for (int i = 0; i < enfrentamientos.size(); i++) {
+            Enfrentamiento e = enfrentamientos.get(i);
+            System.out.println((i + 1) + ". " + e.getEquipo_local().getNombre() + " vs " + e.getEquipo_visitante().getNombre() +
+                    " | Fecha: " + e.getFecha() + " Hora: " + e.getHora() +
+                    " | Resultado: " + e.getGoles_local() + "-" + e.getGoles_visitante());
+        }
+        System.out.print("Selecciona el número del enfrentamiento que quieres borrar: ");
+        int opcion = Integer.parseInt(sc.nextLine());
+        if (opcion < 1 || opcion > enfrentamientos.size()) return;
+        Enfrentamiento enfrentamientoBorrar = enfrentamientos.get(opcion - 1);
+        System.out.print("¿Estás seguro de que quieres borrar este enfrentamiento? (si/no): ");
+        String confirmar = sc.nextLine().toLowerCase();
+        if (confirmar.equals("si") || confirmar.equals("s")) {
+            enfrentamientos.remove(enfrentamientoBorrar);
+            System.out.println("Enfrentamiento borrado correctamente.");
+        } else {
+            System.out.println("Borrado cancelado.");
+        }
+    }
 
 }

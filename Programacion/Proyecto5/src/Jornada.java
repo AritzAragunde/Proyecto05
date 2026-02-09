@@ -1,11 +1,13 @@
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Jornada {
     private String id_jornada;
     private int numero;
     private LocalDate fecha;
-    private Enfrentamiento enfrentamientos;
+    private List<Enfrentamiento> enfrentamientos = new ArrayList<>();
 
     public String getId_jornada() {
         return id_jornada;
@@ -31,18 +33,29 @@ public class Jornada {
         this.fecha = fecha;
     }
 
-    public Enfrentamiento getEnfrentamientos() {
+    public List<Enfrentamiento> getEnfrentamientos() {
         return enfrentamientos;
     }
 
-    public void setEnfrentamientos(Enfrentamiento enfrentamientos) {
+    public void setEnfrentamientos(List<Enfrentamiento> enfrentamientos) {
         this.enfrentamientos = enfrentamientos;
     }
 
-    public Jornada(String id_jornada, int numero, LocalDate fecha, Enfrentamiento enfrentamientos) {
+    public Jornada(String id_jornada, int numero, LocalDate fecha) {
         this.id_jornada = id_jornada;
         this.numero = numero;
         this.fecha = fecha;
-        this.enfrentamientos = enfrentamientos;
+        this.enfrentamientos = new ArrayList<>();
     }
+
+    @Override
+    public String toString() {
+        return "Jornada{" +
+                "id_jornada='" + id_jornada + '\'' +
+                ", numero=" + numero +
+                ", fecha=" + fecha +
+                ", enfrentamientos=" + enfrentamientos +
+                '}';
+    }
+
 }
